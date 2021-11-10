@@ -1,15 +1,29 @@
-import { Flex, IconButton, Heading, Spacer } from '@chakra-ui/react';
+import {
+  Flex,
+  IconButton,
+  Heading,
+  Spacer,
+  useColorMode,
+} from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 
-const Header = () => (
-  <Flex p={5} align="center" justify="center">
-    <Spacer />
-    <Heading as="h2" size="lg">
-      My To Do List
-    </Heading>
-    <Spacer />
-    <IconButton icon={<FaSun />} isRound="true" pos="right" />
-  </Flex>
-);
+const Header = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <Flex p={5} align="center" justify="center">
+      <Spacer />
+      <Heading as="h2" size="lg">
+        My To Do List
+      </Heading>
+      <Spacer />
+      <IconButton
+        icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+        isRound="true"
+        pos="right"
+        onClick={toggleColorMode}
+      />
+    </Flex>
+  );
+};
 
 export default Header;

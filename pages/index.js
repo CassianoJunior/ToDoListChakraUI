@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Header />
       <Grid templateColumns="repeat(3, 1fr)" gap={4} mx={4} justify="center">
-        <ListSection title="Todo" />
+        <ListSection title="To do" />
         <ListSection title="Doing" />
         <ListSection title="Done" />
       </Grid>
