@@ -4,13 +4,12 @@
         "es2021": true,
         "node": true
     },
+    "parser": "babel-eslint",
     "extends": [
         "plugin:react/recommended",
         "airbnb",
         "prettier",
-        "prettier/react",
-        "eslint:recommended",
-        "next"
+        "prettier/react"
     ],
     "parserOptions": {
         "ecmaFeatures": {
