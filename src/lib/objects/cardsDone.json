@@ -1,0 +1,12 @@
+[
+    {
+        "id": 0,
+        "title": "Done",
+        "tags": [
+            { "name": "Tudo", "color": "tomato" },
+            { "name": "Bem", "color": "blue" }
+        ],
+        "user": "Joseph",
+        "description": "Student"
+    }
+  ]

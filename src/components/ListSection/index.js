@@ -9,9 +9,11 @@ import {
   Container,
   Avatar,
   Text,
+  theme,
+  IconButton,
 } from '@chakra-ui/react';
 
-import { Icon } from '@chakra-ui/icons';
+import { AddIcon, Icon } from '@chakra-ui/icons';
 
 import {
   AiOutlineUser,
@@ -19,46 +21,13 @@ import {
   AiFillCheckCircle,
 } from 'react-icons/ai';
 
-const cardsTodo = [
-  {
-    id: 0,
-    title: 'Todo',
-    tags: [
-      { name: 'Ola', color: 'tomato' },
-      { name: 'Oi', color: 'blue' },
-    ],
-    user: 'Cassiano',
-    description: 'Student',
-  },
-];
+import AddTaskButton from '../AddTaskButton';
 
-const cardsDoing = [
-  {
-    id: 0,
-    title: 'Doing',
-    tags: [
-      { name: 'Como', color: 'tomato' },
-      { name: 'Vai', color: 'blue' },
-    ],
-    user: 'Amarildo',
-    description: 'Student',
-  },
-];
+import cardsTodo from '../../lib/objects/cardsTodo.json';
+import cardsDoing from '../../lib/objects/cardsDoing.json';
+import cardsDone from '../../lib/objects/cardsDone.json';
 
-const cardsDone = [
-  {
-    id: 0,
-    title: 'Done',
-    tags: [
-      { name: 'Tudo', color: 'tomato' },
-      { name: 'Bem', color: 'blue' },
-    ],
-    user: 'Joseph',
-    description: 'Student',
-  },
-];
-
-function defineCards(title) {
+export function defineCards(title) {
   if (title === 'To do') return cardsTodo;
 
   return title === 'Doing' ? cardsDoing : cardsDone;
@@ -69,18 +38,20 @@ const ListSection = ({ title }) => {
 
   return (
     <Stack w="100%" border="1px" h="80vh" boxShadow="xl" rounded="md">
-      <Flex align="center">
-        <Heading as="h3" size="md" px={4} py={1}>
+      <Flex justify="space-between" w="98%" align="center" pt={1}>
+        <Heading as="h3" size="md" pl={2}>
           {title}
         </Heading>
+        <IconButton icon={<AddIcon />} size="sm" isRound="true" />
       </Flex>
-      <Divider bg="white" m="2px" />
+      <Divider bg="white" />
       <Container key={title}>
         {cards.map((items) => (
           <Box
             w="90%"
             mx="auto"
-            my={1}
+            my={2}
+            py={1}
             border="1px"
             borderColor="blue.100"
             borderRadius="lg"
@@ -103,7 +74,9 @@ const ListSection = ({ title }) => {
                   bgColor={color}
                   px={5}
                 >
-                  {name}
+                  <Text as="p" fontFamily={theme.fonts.body}>
+                    {name}
+                  </Text>
                 </Tag>
               ))}
             </HStack>
@@ -119,6 +92,7 @@ const ListSection = ({ title }) => {
           </Box>
         ))}
       </Container>
+      <AddTaskButton title={title} cards={cards} />
     </Stack>
   );
 };
