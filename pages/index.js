@@ -6,7 +6,12 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Grid templateColumns="repeat(3, 1fr)" gap={4} mx={4} justify="center">
+      <Grid
+        templateColumns="repeat(3, minmax(0,1fr))"
+        gap={4}
+        mx={4}
+        justify="center"
+      >
         <ListSection title="To do" />
         <ListSection title="Doing" />
         <ListSection title="Done" />
