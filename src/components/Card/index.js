@@ -17,7 +17,9 @@ import {
   AiFillCheckCircle,
 } from 'react-icons/ai';
 
-import { MdClose, MdEditNote } from 'react-icons/md';
+import { MdClose } from 'react-icons/md';
+
+// MdEditNote
 
 const Card = ({
   sectionTitle,

@@ -54,7 +54,7 @@ function organizeTags(namedTags) {
   return organizedTags;
 }
 
-function defineValue(cards) {}
+// function defineValue(cards) {}
 
 const ListSection = ({ title }) => {
   const [cards, setCards] = useState(
@@ -75,7 +75,7 @@ const ListSection = ({ title }) => {
   const [exist, setExist] = useState(false);
   const [tagsActive, setTags] = useState([]);
   const [titleNewCard, handleTitle] = useState('');
-  const [isEditing, setEditing] = useState(false);
+  // const [isEditing, setEditing] = useState(false);
 
   return (
     <Stack w="100%" border="1px" h="80vh" boxShadow="xl" rounded="md">
