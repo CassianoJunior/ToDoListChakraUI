@@ -13,7 +13,7 @@ const Header = () => {
     <Flex p={5} align="center" justify="center">
       <Spacer />
       <Heading as="h2" size="lg">
-        My To Do List
+        My Team To Do List
       </Heading>
       <Spacer />
       <IconButton
