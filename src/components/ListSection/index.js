@@ -58,8 +58,7 @@ function organizeTags(namedTags) {
 }
 
 const ListSection = ({ title }) => {
-  const [cards, setCards] = useState([]);
-  // const cards = [];
+  const [cards, setCards] = useState(defineCards(title));
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
