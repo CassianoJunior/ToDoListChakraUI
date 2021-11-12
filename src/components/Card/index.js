@@ -19,7 +19,15 @@ import {
 
 import { MdClose, MdEditNote } from 'react-icons/md';
 
-const Card = ({ sectionTitle, id, title, tags, user, description }) => (
+const Card = ({
+  sectionTitle,
+  cardId,
+  title,
+  tags,
+  user,
+  description,
+  remove,
+}) => (
   <Box
     w="90%"
     mx="auto"
@@ -28,7 +36,7 @@ const Card = ({ sectionTitle, id, title, tags, user, description }) => (
     border="1px"
     borderColor="blue.100"
     borderRadius="lg"
-    key={id}
+    key={cardId}
   >
     <Heading as="h4" size="md" px={3} display="flex">
       <Flex>
@@ -43,19 +51,20 @@ const Card = ({ sectionTitle, id, title, tags, user, description }) => (
       </Flex>
       <Spacer />
       <Flex flexDir="row">
-        <IconButton
+        {/* <IconButton
           icon={<MdEditNote />}
           size="xs"
           isRound="true"
           onClick={() => {}}
           mx={1}
-          justifySelf="end"
-        />
+        /> */}
         <IconButton
           icon={<MdClose />}
           size="xs"
           isRound="true"
-          onClick={() => {}}
+          onClick={() => {
+            remove(cardId);
+          }}
         />
       </Flex>
     </Heading>

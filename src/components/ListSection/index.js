@@ -24,31 +24,25 @@ import { AddIcon } from '@chakra-ui/icons';
 
 import { IoAddCircleOutline } from 'react-icons/io5';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
-// import cardsTodoStatic from '../../lib/objects/cardsTodo.json';
-// import cardsDoingStatic from '../../lib/objects/cardsDoing.json';
-// import cardsDoneStatic from '../../lib/objects/cardsDone.json';
-// import cardsTodo from '../../lib/objects/cardsTodo.json';
-// import cardsDoing from '../../lib/objects/cardsDoing.json';
-// import cardsDone from '../../lib/objects/cardsDone.json';
 import tags from '../../lib/objects/tags.json';
 import Card from '../Card';
 
-const cardsTodo = localStorage.getItem('To do')
-  ? JSON.parse(localStorage.getItem('To do'))
-  : [];
-const cardsDoing = localStorage.getItem('Doing')
-  ? JSON.parse(localStorage.getItem('Doing'))
-  : [];
-const cardsDone = localStorage.getItem('Done')
-  ? JSON.parse(localStorage.getItem('Done'))
-  : [];
-
 function defineCards(title) {
-  if (title === 'To do') return cardsTodo;
+  if (title === 'To do')
+    return localStorage.getItem('To do') !== null
+      ? JSON.parse(localStorage.getItem('To do'))
+      : [];
 
-  return title === 'Doing' ? cardsDoing : cardsDone;
+  if (title === 'Doing')
+    return localStorage.getItem('Doing')
+      ? JSON.parse(localStorage.getItem('Doing'))
+      : [];
+
+  return localStorage.getItem('Done')
+    ? JSON.parse(localStorage.getItem('Done'))
+    : [];
 }
 
 function organizeTags(namedTags) {
@@ -60,13 +54,28 @@ function organizeTags(namedTags) {
   return organizedTags;
 }
 
+function defineValue(cards) {}
+
 const ListSection = ({ title }) => {
-  const [cards, setCards] = useState(defineCards(title));
+  const [cards, setCards] = useState(
+    typeof window !== 'undefined' ? defineCards(title) : [],
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
+  const removeTask = (id) => {
+    const cardsUpdated = cards.filter((card) => card.id !== id);
+    setCards(cardsUpdated);
+  };
+
+  useEffect(() => {
+    localStorage.setItem(title, JSON.stringify(cards));
+  }, [cards]);
+
+  const [exist, setExist] = useState(false);
   const [tagsActive, setTags] = useState([]);
   const [titleNewCard, handleTitle] = useState('');
+  const [isEditing, setEditing] = useState(false);
 
   return (
     <Stack w="100%" border="1px" h="80vh" boxShadow="xl" rounded="md">
@@ -94,6 +103,7 @@ const ListSection = ({ title }) => {
                 user={user}
                 description={description}
                 key={id}
+                remove={removeTask}
               />
             ),
           )}
@@ -170,16 +180,30 @@ const ListSection = ({ title }) => {
                   });
                   return;
                 }
-                cards.push({
+
+                cards.forEach(({ title: cardTitle }) => {
+                  if (cardTitle === titleNewCard) setExist(!exist);
+                });
+                if (exist) {
+                  toast({
+                    title: 'Task already exists',
+                    variant: 'top-accent',
+                    status: 'error',
+                    duration: 1000,
+                    isClosable: true,
+                  });
+                  setExist(!exist);
+                  return;
+                }
+
+                const cardAdded = {
                   id: nanoid(),
                   title: titleNewCard,
                   tags: organizeTags(tagsActive),
                   user: 'Default',
                   description: 'Desc',
-                });
-                setCards(cards);
-                console.log(cards);
-                localStorage.setItem(title, JSON.stringify(cards));
+                };
+                setCards([...cards, cardAdded]);
                 onClose();
                 toast({
                   title: 'Task Added',
