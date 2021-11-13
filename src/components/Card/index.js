@@ -58,18 +58,25 @@ const Card = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [taskTitle, handleTaskTitle] = useState(title);
-  const [cardTags, setCardTags] = useState(tags);
 
-  const [tagsActive, setTagsActive] = useState(parseTags(cardTags));
-  const [cardToUpdate, setCardUpdated] = useState([]);
+  const [tagsActive, setTagsActive] = useState(parseTags(tags));
 
   const check = (name) => {
     let str = false;
-    cardTags.forEach((tag) => {
+    tags.forEach((tag) => {
       if (tag.name === name) str = true;
     });
 
     return str;
+  };
+
+  const organizeTags = (namedTags) => {
+    const organizedTags = [];
+    allTags.forEach((tag) => {
+      if (namedTags.includes(tag.name)) organizedTags.push(tag);
+    });
+
+    return organizedTags;
   };
 
   return (
@@ -151,7 +158,7 @@ const Card = ({
         isOpen={isOpen}
         onClose={() => {
           handleTaskTitle(title);
-          setTagsActive(parseTags(cardTags));
+          setTagsActive(parseTags(tags));
           onClose();
         }}
       >
@@ -205,9 +212,9 @@ const Card = ({
               ml={3}
               size="sm"
               onClick={() => {
-                if (!title || !tagsActive.length) {
+                if (!taskTitle || !tagsActive.length) {
                   toast({
-                    title: title
+                    title: taskTitle
                       ? 'Select one or more tags'
                       : 'Task must have a title',
                     variant: 'top-accent',
@@ -217,13 +224,13 @@ const Card = ({
                   });
                   return;
                 }
-
-                cards.forEach((card, index) => {
+                let cardToUpdate;
+                cards.forEach((card) => {
                   if (card.id === cardId) {
                     const cardUpdated = card;
                     cardUpdated.title = taskTitle;
-                    console.log(cardUpdated);
-                    setCardUpdated([card, index]);
+                    cardUpdated.tags = organizeTags(tagsActive);
+                    cardToUpdate = cardUpdated;
                   }
                 });
 
@@ -237,7 +244,7 @@ const Card = ({
                   isClosable: true,
                 });
                 handleTaskTitle(title);
-                setTagsActive([]);
+                setTagsActive(tags);
               }}
             >
               Done
