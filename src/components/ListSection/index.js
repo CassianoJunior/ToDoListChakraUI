@@ -17,6 +17,7 @@ import {
   Input,
   Checkbox,
   useToast,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 
 import { AddIcon } from '@chakra-ui/icons';
@@ -76,6 +77,8 @@ const ListSection = ({ title }) => {
   const [titleNewCard, handleTitle] = useState('');
   // const [isEditing, setEditing] = useState(false);
 
+  const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
+
   return (
     <Stack
       w="100%"
@@ -128,7 +131,7 @@ const ListSection = ({ title }) => {
           Add new task
         </Button>
       </Flex>
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{title}</ModalHeader>
@@ -144,7 +147,7 @@ const ListSection = ({ title }) => {
                 }}
               />
               <Text fontWeight="600">Select Tags</Text>
-              <Flex>
+              <Flex wrap="wrap">
                 {tags.map(({ name, color }) => (
                   <Checkbox
                     key={color}
