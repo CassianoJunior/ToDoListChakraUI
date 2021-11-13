@@ -30,18 +30,21 @@ const Card = ({
   description,
   remove,
 }) => (
-  <Box
-    w="90%"
+  <Flex
+    w="100%"
+    maxW={['300px', '450px', '230px', '300px', '350px']}
     mx="auto"
     my={2}
     py={1}
+    flexDir="column"
+    justify="center"
     border="1px"
     borderColor="blue.100"
     borderRadius="lg"
     key={cardId}
   >
     <Heading as="h4" size="md" px={3} display="flex">
-      <Flex>
+      <Flex align="center">
         <Icon
           as={
             sectionTitle !== 'Done' ? AiOutlineCheckCircle : AiFillCheckCircle
@@ -49,7 +52,9 @@ const Card = ({
           alignSelf="center"
           color={sectionTitle === 'Done' ? 'green' : ''}
         />
-        <Text px={1}>{title}</Text>
+        <Text px={1} mb={1} fontSize={['xs', 'sm', 'md', '']}>
+          {title}
+        </Text>
       </Flex>
       <Spacer />
       <Flex flexDir="row">
@@ -80,7 +85,11 @@ const Card = ({
           borderRadius="full"
           px={5}
         >
-          <Text as="p" fontFamily={theme.fonts.body}>
+          <Text
+            as="p"
+            fontFamily={theme.fonts.body}
+            fontSize={['xs', 'xs', 'sm', 'sm', 'sm']}
+          >
             {name}
           </Text>
         </Tag>
@@ -96,7 +105,7 @@ const Card = ({
         <Text fontSize="sm">{description}</Text>
       </Box>
     </Flex>
-  </Box>
+  </Flex>
 );
 
 export default Card;

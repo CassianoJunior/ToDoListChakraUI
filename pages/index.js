@@ -7,9 +7,10 @@ export default function Home() {
     <>
       <Header />
       <Grid
-        templateColumns="repeat(3, minmax(0,1fr))"
+        templateColumns={['1fr', '1fr', 'repeat(3, minmax(0,1fr))']}
         gap={4}
-        mx={4}
+        mx="auto"
+        maxW={['360px', '490px', '760px', '990px', '1280px', '1440px']}
         justify="center"
       >
         <ListSection title="To do" />

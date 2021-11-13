@@ -3,7 +3,7 @@ import {
   Stack,
   Divider,
   Flex,
-  Container,
+  Spacer,
   Text,
   IconButton,
   Button,
@@ -78,7 +78,14 @@ const ListSection = ({ title }) => {
   // const [isEditing, setEditing] = useState(false);
 
   return (
-    <Stack w="100%" border="1px" h="80vh" boxShadow="xl" rounded="md">
+    <Stack
+      w="100%"
+      border="1px"
+      h={['50vh', '80vh', '60vh']}
+      boxShadow="xl"
+      rounded="md"
+      overflowY="scroll"
+    >
       <Flex justify="space-between" w="98%" align="center" pt={1}>
         <Heading as="h3" size="md" pl={2}>
           {title}
@@ -91,7 +98,7 @@ const ListSection = ({ title }) => {
         />
       </Flex>
       <Divider bg="white" />
-      <Container id="container" key={title}>
+      <Flex key={title} flexDir="column">
         {cards &&
           cards.map(
             ({ id, title: cardTitle, tags: cardTags, user, description }) => (
@@ -107,13 +114,16 @@ const ListSection = ({ title }) => {
               />
             ),
           )}
-      </Container>
-      <Flex align="center" justify="center">
+      </Flex>
+      <Flex justify="center" mx="auto" w="100%">
         <Button
           colorScheme="teal"
           variant="outline"
-          w="85%"
+          w="100%"
+          mx="auto"
+          maxW={['300px', '450px', '230px', '300px', '350px']}
           leftIcon={<IoAddCircleOutline size={25} />}
+          mb={2}
           onClick={onOpen}
         >
           Add new task
@@ -216,7 +226,7 @@ const ListSection = ({ title }) => {
                 setTags([]);
               }}
             >
-              Add new task
+              Add task
             </Button>
           </ModalFooter>
         </ModalContent>
