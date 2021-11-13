@@ -29,7 +29,7 @@ import { nanoid } from 'nanoid';
 import tags from '../../lib/objects/tags.json';
 import Card from '../Card';
 
-function defineCards(title) {
+export function defineCards(title) {
   if (title === 'To do')
     return localStorage.getItem('To do') !== null
       ? JSON.parse(localStorage.getItem('To do'))
@@ -54,14 +54,14 @@ function organizeTags(namedTags) {
   return organizedTags;
 }
 
-// function defineValue(cards) {}
-
 const ListSection = ({ title }) => {
   const [cards, setCards] = useState(
     typeof window !== 'undefined' ? defineCards(title) : [],
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+
+  const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
 
   const removeTask = (id) => {
     const cardsUpdated = cards.filter((card) => card.id !== id);
@@ -75,9 +75,6 @@ const ListSection = ({ title }) => {
   const [exist, setExist] = useState(false);
   const [tagsActive, setTags] = useState([]);
   const [titleNewCard, handleTitle] = useState('');
-  // const [isEditing, setEditing] = useState(false);
-
-  const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
 
   return (
     <Stack
@@ -113,6 +110,8 @@ const ListSection = ({ title }) => {
                 description={description}
                 key={id}
                 remove={removeTask}
+                cards={cards}
+                allTags={tags}
               />
             ),
           )}
@@ -139,6 +138,7 @@ const ListSection = ({ title }) => {
           <ModalBody>
             <Stack spacing={3}>
               <Input
+                id="input"
                 variant="flushed"
                 placeholder="Task title"
                 onChange={(e) => {
