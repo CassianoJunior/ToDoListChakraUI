@@ -67,6 +67,7 @@ const ListSection = ({ title }) => {
   const [cards, setCards] = useState(
     typeof window !== 'undefined' ? defineCards(title) : [],
   );
+  const [listUpdated, setListUpdated] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -86,6 +87,15 @@ const ListSection = ({ title }) => {
     const task = cards.filter((card) => card.id === id);
 
     return task[0];
+  };
+
+  const moveTask = (id, to) => {
+    const task = getTask(id);
+    const toList = JSON.parse(localStorage.getItem(to));
+    setListUpdated([...toList, task]);
+    localStorage.setItem(to, JSON.stringify(listUpdated));
+
+    // removeTask(id);
   };
 
   useEffect(() => {
@@ -170,6 +180,7 @@ const ListSection = ({ title }) => {
                 remove={removeTask}
                 editing={[onOpen, setCardToUpdate, getTask, setEditing]}
                 key={id}
+                moving={moveTask}
               />
             ),
           )}
