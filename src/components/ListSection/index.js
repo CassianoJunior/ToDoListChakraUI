@@ -45,6 +45,8 @@ function defineCards(title) {
     : [];
 }
 
+// Recebe um array de nomes e transforma no objeto task
+// ex: ['Web', 'High'] -> [{name: 'Web', color: 'green'}, {name: 'High', color: 'red'}]
 function organizeTags(namedTags) {
   const organizedTags = [];
   tags.forEach((tag) => {
@@ -53,8 +55,6 @@ function organizeTags(namedTags) {
 
   return organizedTags;
 }
-
-// function defineValue(cards) {}
 
 const ListSection = ({ title }) => {
   const [cards, setCards] = useState(
@@ -75,7 +75,22 @@ const ListSection = ({ title }) => {
   const [exist, setExist] = useState(false);
   const [tagsActive, setTags] = useState([]);
   const [titleNewCard, handleTitle] = useState('');
-  // const [isEditing, setEditing] = useState(false);
+  const [editedTitle, handleEditedTitle] = useState('');
+  const [isEditing, setEditing] = useState(false);
+  const [editActiveTags, setEditedTags] = useState([]);
+
+  const check = (name) => {
+    let isCheck = false;
+    if (editActiveTags.includes(name)) isCheck = true;
+
+    return isCheck;
+  };
+
+  const getId = (id) => {
+    const cardSelected = cards.filter((card) => card.id === id);
+
+    return cardSelected[0];
+  };
 
   const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
 
@@ -113,6 +128,13 @@ const ListSection = ({ title }) => {
                 description={description}
                 key={id}
                 remove={removeTask}
+                editing={[
+                  onOpen,
+                  setEditing,
+                  handleEditedTitle,
+                  setEditedTags,
+                  setTags,
+                ]}
               />
             ),
           )}
@@ -126,24 +148,41 @@ const ListSection = ({ title }) => {
           maxW={['300px', '450px', '230px', '300px', '350px']}
           leftIcon={<IoAddCircleOutline size={25} />}
           mb={2}
-          onClick={onOpen}
+          onClick={() => {
+            setEditing(false);
+            onOpen();
+          }}
         >
           Add new task
         </Button>
       </Flex>
-      <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setEditing(false);
+          setEditedTags([]);
+          setTags([]);
+          onClose();
+        }}
+        size={modalSize}
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader>{isEditing ? 'Edit task' : title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack spacing={3}>
               <Input
                 variant="flushed"
                 placeholder="Task title"
+                value={isEditing ? editedTitle : titleNewCard}
                 onChange={(e) => {
                   const { value } = e.target;
-                  handleTitle(value);
+                  if (isEditing) {
+                    handleEditedTitle(value);
+                  } else {
+                    handleTitle(value);
+                  }
                 }}
               />
               <Text fontWeight="600">Select Tags</Text>
@@ -152,11 +191,13 @@ const ListSection = ({ title }) => {
                   <Checkbox
                     key={color}
                     colorScheme={color}
+                    defaultChecked={isEditing ? check(name) : false}
                     px={1}
                     value={name}
                     onChange={(e) => {
                       const isChecked = e.target.checked;
                       const { value } = e.target;
+
                       if (isChecked && !tagsActive.includes(value)) {
                         tagsActive.push(value);
                       } else if (!isChecked && tagsActive.includes(value)) {
@@ -173,18 +214,19 @@ const ListSection = ({ title }) => {
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" onClick={onClose} size="sm">
-              Close
+              {isEditing ? 'Cancel' : 'Close'}
             </Button>
             <Button
               colorScheme="green"
               ml={3}
               size="sm"
               onClick={() => {
-                if (!titleNewCard || !tagsActive.length) {
+                if ((!titleNewCard && !editedTitle) || !tagsActive.length) {
                   toast({
-                    title: titleNewCard
-                      ? 'Select one or more tags'
-                      : 'Task must have a title',
+                    title:
+                      titleNewCard || editedTitle
+                        ? 'Select one or more tags'
+                        : 'Task must have a title',
                     variant: 'top-accent',
                     status: 'error',
                     duration: 1000,
@@ -207,15 +249,21 @@ const ListSection = ({ title }) => {
                   setExist(!exist);
                   return;
                 }
-
-                const cardAdded = {
-                  id: nanoid(),
-                  title: titleNewCard,
-                  tags: organizeTags(tagsActive),
-                  user: 'Default',
-                  description: 'Desc',
-                };
-                setCards([...cards, cardAdded]);
+                let newCard;
+                if (!isEditing) {
+                  newCard = {
+                    id: nanoid(),
+                    title: titleNewCard,
+                    tags: organizeTags(tagsActive),
+                    user: 'Default',
+                    description: 'Desc',
+                  };
+                } else {
+                  newCard = {
+                    id: getId(),
+                  };
+                }
+                setCards([...cards, newCard]);
                 onClose();
                 toast({
                   title: 'Task Added',
@@ -228,7 +276,7 @@ const ListSection = ({ title }) => {
                 setTags([]);
               }}
             >
-              Add task
+              {isEditing ? 'Update task' : 'Add task'}
             </Button>
           </ModalFooter>
         </ModalContent>
