@@ -1,6 +1,7 @@
 import { Grid } from '@chakra-ui/react';
 import Header from '../src/components/Header';
 import ListSection from '../src/components/ListSection';
+import Footer from '../src/components/Footer';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         <ListSection title="Doing" />
         <ListSection title="Done" />
       </Grid>
+      <Footer />
     </>
   );
 }

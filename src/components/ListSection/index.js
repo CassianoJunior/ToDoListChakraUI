@@ -72,6 +72,13 @@ const ListSection = ({ title }) => {
 
   const removeTask = (id) => {
     const cardsUpdated = cards.filter((card) => card.id !== id);
+    toast({
+      title: 'Task removed',
+      variant: 'top-accent',
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+    });
     setCards(cardsUpdated);
   };
 
@@ -267,7 +274,7 @@ const ListSection = ({ title }) => {
                 }
 
                 cards.forEach(({ title: cardTitle }) => {
-                  if (cardTitle === titleNewTask) setExist(!exist);
+                  if (cardTitle === titleNewTask && !isEditing) setExist(true);
                 });
                 if (exist) {
                   toast({
@@ -277,7 +284,7 @@ const ListSection = ({ title }) => {
                     duration: 1000,
                     isClosable: true,
                   });
-                  setExist(!exist);
+                  setExist(false);
                   return;
                 }
 
@@ -307,6 +314,7 @@ const ListSection = ({ title }) => {
                 handleTitle('');
                 setTags([]);
                 setEditing(false);
+                setExist(false);
               }}
             >
               {isEditing ? 'Update task' : 'Add task'}
