@@ -118,7 +118,6 @@ const ListSection = ({ title }) => {
       h={['50vh', '80vh', '60vh']}
       boxShadow="xl"
       rounded="md"
-      overflowY="scroll"
     >
       <Flex justify="space-between" w="98%" align="center" pt={1}>
         <Heading as="h3" size="md" pl={2}>
@@ -132,7 +131,25 @@ const ListSection = ({ title }) => {
         />
       </Flex>
       <Divider bg="white" />
-      <Flex key={title} flexDir="column">
+      <Flex
+        key={title}
+        flexDir="column"
+        overflowY="scroll"
+        className="scroll"
+        sx={{
+          '::-webkit-scrollbar': {
+            width: '3px',
+          },
+          '::-webkit-scrollbar-track': {
+            backgroundColor: 'gray.800',
+            borderRadius: '15px',
+          },
+          '::-webkit-scrollbar-thumb': {
+            backgroundColor: 'gray.300',
+            borderRadius: '12px',
+          },
+        }}
+      >
         {cards &&
           cards.map(
             ({ id, title: cardTitle, tags: cardTags, user, description }) => (
@@ -143,9 +160,9 @@ const ListSection = ({ title }) => {
                 tags={cardTags}
                 user={user}
                 description={description}
-                key={id}
                 remove={removeTask}
                 editing={[onOpen, setCardToUpdate, getTask, setEditing]}
+                key={id}
               />
             ),
           )}
