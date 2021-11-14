@@ -17,9 +17,7 @@ import {
   AiFillCheckCircle,
 } from 'react-icons/ai';
 
-import { MdClose } from 'react-icons/md';
-
-// MdEditNote
+import { MdClose, MdEditNote } from 'react-icons/md';
 
 const Card = ({
   sectionTitle,
@@ -29,6 +27,7 @@ const Card = ({
   user,
   description,
   remove,
+  editing,
 }) => (
   <Flex
     w="100%"
@@ -58,13 +57,17 @@ const Card = ({
       </Flex>
       <Spacer />
       <Flex flexDir="row">
-        {/* <IconButton
+        <IconButton
           icon={<MdEditNote />}
           size="xs"
           isRound="true"
-          onClick={() => {}}
+          onClick={() => {
+            editing[1](editing[2](cardId));
+            editing[3](true);
+            editing[0]();
+          }}
           mx={1}
-        /> */}
+        />
         <IconButton
           icon={<MdClose />}
           size="xs"
