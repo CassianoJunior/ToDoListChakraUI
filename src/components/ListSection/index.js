@@ -29,23 +29,7 @@ import { nanoid } from 'nanoid';
 import tags from '../../lib/objects/tags.json';
 import Card from '../Card';
 
-function defineCards(title) {
-  if (title === 'To do')
-    return localStorage.getItem('To do') !== null
-      ? JSON.parse(localStorage.getItem('To do'))
-      : [];
-
-  if (title === 'Doing')
-    return localStorage.getItem('Doing')
-      ? JSON.parse(localStorage.getItem('Doing'))
-      : [];
-
-  return localStorage.getItem('Done')
-    ? JSON.parse(localStorage.getItem('Done'))
-    : [];
-}
-
-function organizeTags(namedTags) {
+function parseTags(namedTags) {
   const organizedTags = [];
   tags.forEach((tag) => {
     if (namedTags.includes(tag.name)) organizedTags.push(tag);
@@ -54,7 +38,7 @@ function organizeTags(namedTags) {
   return organizedTags;
 }
 
-function parseTags(cardTags) {
+function stringifyTags(cardTags) {
   const namedTags = [];
   cardTags.forEach((tag) => {
     namedTags.push(tag.name);
@@ -63,44 +47,9 @@ function parseTags(cardTags) {
   return namedTags;
 }
 
-const ListSection = ({ title }) => {
-  const [cards, setCards] = useState(
-    typeof window !== 'undefined' ? defineCards(title) : [],
-  );
-  const [listUpdated, setListUpdated] = useState([]);
+const ListSection = ({ title, tasks, setTasks }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-
-  const removeTask = (id) => {
-    const cardsUpdated = cards.filter((card) => card.id !== id);
-    toast({
-      title: 'Task removed',
-      variant: 'top-accent',
-      status: 'success',
-      duration: 1000,
-      isClosable: true,
-    });
-    setCards(cardsUpdated);
-  };
-
-  const getTask = (id) => {
-    const task = cards.filter((card) => card.id === id);
-
-    return task[0];
-  };
-
-  const moveTask = (id, to) => {
-    const task = getTask(id);
-    const toList = JSON.parse(localStorage.getItem(to));
-    setListUpdated([...toList, task]);
-    localStorage.setItem(to, JSON.stringify(listUpdated));
-
-    // removeTask(id);
-  };
-
-  useEffect(() => {
-    localStorage.setItem(title, JSON.stringify(cards));
-  }, [cards]);
 
   const [exist, setExist] = useState(false);
   const [tagsActive, setTags] = useState([]);
@@ -109,30 +58,53 @@ const ListSection = ({ title }) => {
   const [titleNewTask, handleTitle] = useState(
     cardToUpdate && isEditing ? cardToUpdate.title : '',
   );
+  const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
+
   useEffect(() => {
     handleTitle(cardToUpdate && isEditing ? cardToUpdate.title : '');
   }, [isEditing]);
 
   useEffect(() => {
     setTags(tagsActive);
-  }, [tagsActive, isEditing]);
+  }, [tagsActive]);
 
+  const removeTask = (id) => {
+    const tasksUpdated = tasks.filter((task) => task.id !== id);
+    toast({
+      title: 'Task removed',
+      variant: 'top-accent',
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+    });
+    setTasks(tasksUpdated);
+  };
+
+  const getTask = (id) => {
+    const taskSelected = tasks.filter((task) => task.id === id);
+
+    return taskSelected[0];
+  };
   const check = (name) => {
     let isCheck = false;
-    if (parseTags(cardToUpdate.tags).includes(name)) {
+    if (stringifyTags(cardToUpdate.tags).includes(name)) {
       if (!tagsActive.includes(name)) tagsActive.push(name);
       isCheck = true;
     }
     return isCheck;
   };
 
-  const modalSize = useBreakpointValue({ base: 'xs', md: 'lg', lg: 'lg' });
+  const moveTask = (id, to) => {
+    const task = getTask(id);
+    task.status = to;
+    setTasks([...tasks]);
+  };
 
   return (
     <Stack
       w="100%"
       border="1px"
-      h={['50vh', '80vh', '60vh']}
+      h={['50vh', '75vh']}
       boxShadow="xl"
       rounded="md"
     >
@@ -152,7 +124,6 @@ const ListSection = ({ title }) => {
         key={title}
         flexDir="column"
         overflowY="scroll"
-        className="scroll"
         sx={{
           '::-webkit-scrollbar': {
             width: '3px',
@@ -167,23 +138,33 @@ const ListSection = ({ title }) => {
           },
         }}
       >
-        {cards &&
-          cards.map(
-            ({ id, title: cardTitle, tags: cardTags, user, description }) => (
-              <Card
-                sectionTitle={title}
-                cardId={id}
-                title={cardTitle}
-                tags={cardTags}
-                user={user}
-                description={description}
-                remove={removeTask}
-                editing={[onOpen, setCardToUpdate, getTask, setEditing]}
-                key={id}
-                moving={moveTask}
-              />
-            ),
-          )}
+        {tasks &&
+          tasks
+            .filter(({ status }) => title === status)
+            .map(
+              ({
+                id,
+                title: cardTitle,
+                tags: cardTags,
+                status,
+                user,
+                description,
+              }) => (
+                <Card
+                  sectionTitle={title}
+                  cardId={id}
+                  title={cardTitle}
+                  tags={cardTags}
+                  status={status}
+                  user={user}
+                  description={description}
+                  remove={removeTask}
+                  editing={[onOpen, setCardToUpdate, getTask, setEditing]}
+                  key={id}
+                  moving={moveTask}
+                />
+              ),
+            )}
       </Flex>
       <Flex justify="center" mx="auto" w="100%">
         <Button
@@ -245,7 +226,6 @@ const ListSection = ({ title }) => {
                       } else if (!isChecked && tagsActive.includes(value)) {
                         tagsActive.splice(tagsActive.indexOf(value), 1);
                       }
-                      setTags(tagsActive);
                     }}
                   >
                     {name}
@@ -284,7 +264,7 @@ const ListSection = ({ title }) => {
                   return;
                 }
 
-                cards.forEach(({ title: cardTitle }) => {
+                tasks.forEach(({ title: cardTitle }) => {
                   if (cardTitle === titleNewTask && !isEditing) setExist(true);
                 });
                 if (exist) {
@@ -301,17 +281,19 @@ const ListSection = ({ title }) => {
 
                 if (isEditing) {
                   cardToUpdate.title = titleNewTask;
-                  cardToUpdate.tags = organizeTags(tagsActive);
-                  setCards([...cards]);
+                  cardToUpdate.tags = parseTags(tagsActive);
+                  setTasks([...tasks]);
                 } else {
                   const cardAdded = {
                     id: nanoid(),
                     title: titleNewTask,
-                    tags: organizeTags(tagsActive),
+                    tags: parseTags(tagsActive),
+                    status: title,
                     user: 'Default',
                     description: 'Desc',
                   };
-                  setCards([...cards, cardAdded]);
+                  const newTasks = [...tasks, cardAdded];
+                  setTasks(newTasks);
                 }
 
                 onClose();

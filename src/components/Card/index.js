@@ -56,7 +56,6 @@ const Card = ({
       border="1px"
       borderColor="blue.100"
       borderRadius="lg"
-      opacity={sectionTitle === 'Done' ? '0.8' : '1'}
     >
       <Heading as="h4" size="md" px={3} display="flex">
         <Flex align="center">
