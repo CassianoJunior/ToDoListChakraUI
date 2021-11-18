@@ -1,10 +1,12 @@
 import { Grid } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import Header from '../src/components/Header';
 import ListSection from '../src/components/ListSection';
 import Footer from '../src/components/Footer';
 
-export default function Home() {
+export default function Home({ username }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function Home() {
   }, [tasks]);
   return (
     <>
-      <Header />
+      <Header user={username} />
       <Grid
         templateColumns={['1fr', '1fr', 'repeat(3, minmax(0,1fr))']}
         gap={4}
@@ -35,4 +37,25 @@ export default function Home() {
       <Footer />
     </>
   );
+}
+
+export async function getServerSideProps(ctx) {
+  const cookies = nookies.get(ctx);
+  const token = cookies.ToDoListUSER_TOKEN;
+
+  if (token === 'undefined' || token === undefined) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+  const { username } = jwt.decode(token);
+
+  return {
+    props: {
+      username,
+    },
+  };
 }

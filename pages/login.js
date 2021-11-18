@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 // import { hash } from 'bcrypt';
 
 import {
@@ -15,9 +15,50 @@ import {
   useColorModeValue,
   Text,
   Link,
+  useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
+import nookies from 'nookies';
+import { useRouter } from 'next/router';
+
+function checkFields(user, password, toast) {
+  if (!user) {
+    toast({
+      title: 'User can not be empty',
+      status: 'error',
+      variant: 'top-accent',
+      isClosable: true,
+      duration: 1000,
+    });
+    return false;
+  }
+
+  if (!password) {
+    toast({
+      title: 'Password can not be empty',
+      status: 'error',
+      variant: 'top-accent',
+      isClosable: true,
+      duration: 1000,
+    });
+    return false;
+  }
+
+  if (password.length < 8) {
+    toast({
+      title: 'Password must be at least 8 characters ',
+      status: 'error',
+      variant: 'top-accent',
+      isClosable: true,
+      duration: 1000,
+    });
+    return false;
+  }
+
+  return true;
+}
 
 const SingIn = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -25,6 +66,9 @@ const SingIn = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   return (
     <Flex
@@ -89,6 +133,9 @@ const SingIn = () => {
             variant="outline"
             onClick={async (e) => {
               e.preventDefault();
+              setLoading(true);
+
+              if (!checkFields(user, password, toast)) return;
 
               const response = await fetch('http://localhost:3000/api/auth', {
                 method: 'POST',
@@ -97,13 +144,38 @@ const SingIn = () => {
                 },
                 body: JSON.stringify({ user, password }),
               });
-              console.log(response);
+
+              const { message, token } = await response.json();
+
+              if (message && message !== 'Login success') {
+                toast({
+                  title: message,
+                  status: 'error',
+                  variant: 'top-accent',
+                  duration: 1000,
+                  isClosable: true,
+                });
+              } else {
+                toast({
+                  title: message,
+                  status: 'success',
+                  variant: 'top-accent',
+                  duration: 1000,
+                  isClosable: true,
+                });
+                nookies.set(null, 'ToDoListUSER_TOKEN', token, {
+                  path: '/',
+                  maxAge: 60 * 60 * 1, // 1 Hour
+                });
+                setLoading(false);
+                router.push('/');
+              }
             }}
           >
-            Sign in
+            Sign in {loading ? <Spinner size="sm" mx={3} /> : ''}
           </Button>
           <Text size="sm" color="white">
-            Don't have an account? <Link href="/signup">Sign up!</Link>
+            Don&apos;t have an account? <Link href="/signup">Sign up!</Link>
           </Text>
         </VStack>
       </Flex>

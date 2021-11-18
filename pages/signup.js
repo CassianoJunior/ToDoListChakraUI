@@ -18,6 +18,7 @@ import {
   Text,
   Link,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
@@ -80,6 +81,7 @@ const SingIn = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   return (
     <Flex
@@ -163,11 +165,11 @@ const SingIn = () => {
             variant="outline"
             onClick={(e) => {
               e.preventDefault();
+              setLoading(true);
 
               if (!checkFields(user, password, confirmPassword, toast)) return;
 
               hash(password, 10, async (err, hashKey) => {
-                // try {
                 const newUser = await fetch(
                   'http://localhost:3000/api/register',
                   {
@@ -179,36 +181,39 @@ const SingIn = () => {
                   },
                 );
 
-                const { message } = await newUser.json();
+                const { message, token } = await newUser.json();
 
-                console.log(message);
-                //   toast({
-                //     title: message,
-                //     status: 'error',
-                //   });
-
-                //   nookies.set(null, 'ToDoListUSER_TOKEN', token, {
-                //     path: '/',
-                //     maxAge: 60 * 60 * 1, // 1 Hour
-                //   });
-                //   router.push('/');
-                //   toast({
-                //     title: 'User created successfully',
-                //     status: 'success',
-                //     variant: 'top-accent',
-                //     isClosable: true,
-                //     duration: 1000,
-                //   });
-                //   setPassword('');
-                //   setConfirmPassword('');
-                //   setUser('');
-                // } catch (error) {
-                //   console.error(error);
-                // }
+                if (message) {
+                  toast({
+                    title: message,
+                    status: 'error',
+                    variant: 'top-accent',
+                    duration: 1000,
+                    isClosable: true,
+                  });
+                  setLoading(false);
+                } else {
+                  nookies.set(null, 'ToDoListUSER_TOKEN', token, {
+                    path: '/',
+                    maxAge: 60 * 60 * 1, // 1 Hour
+                  });
+                  router.push('/');
+                  toast({
+                    title: 'User created successfully',
+                    status: 'success',
+                    variant: 'top-accent',
+                    isClosable: true,
+                    duration: 1000,
+                  });
+                  setPassword('');
+                  setConfirmPassword('');
+                  setUser('');
+                  setLoading(false);
+                }
               });
             }}
           >
-            Sign up
+            Sign up {loading ? <Spinner size="sm" mx={3} /> : ''}
           </Button>
           <Text size="sm" color="white">
             Already have an account? <Link href="/login">Sing in!</Link>
