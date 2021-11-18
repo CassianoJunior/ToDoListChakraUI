@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// import { hash } from 'bcrypt';
 
 import {
   Flex,
@@ -12,6 +13,8 @@ import {
   InputRightElement,
   Button,
   useColorModeValue,
+  Text,
+  Link,
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
@@ -59,21 +62,23 @@ const SingIn = () => {
               e.preventDefault();
               setUser(e.target.value);
             }}
+            px={1}
           />
           <InputGroup>
             <Input
               variant="flushed"
-              type={showPass ? 'password' : 'text'}
+              type={showPass ? 'text' : 'password'}
               placeholder="Password"
               onChange={(e) => {
                 e.preventDefault();
                 setPassword(e.target.value);
               }}
+              px={1}
             />
             <InputRightElement>
               <IconButton
                 size="xs"
-                icon={showPass ? <RiEyeLine /> : <RiEyeCloseLine />}
+                icon={showPass ? <RiEyeCloseLine /> : <RiEyeLine />}
                 onClick={() => setShowPass(!showPass)}
               />
             </InputRightElement>
@@ -82,9 +87,24 @@ const SingIn = () => {
             w="100%"
             colorScheme={useColorModeValue('blue', 'teal')}
             variant="outline"
+            onClick={async (e) => {
+              e.preventDefault();
+
+              const response = await fetch('http://localhost:3000/api/auth', {
+                method: 'POST',
+                headers: {
+                  'Content-type': 'aplication/json',
+                },
+                body: JSON.stringify({ user, password }),
+              });
+              console.log(response);
+            }}
           >
             Sign in
           </Button>
+          <Text size="sm" color="white">
+            Don't have an account? <Link href="/signup">Sign up!</Link>
+          </Text>
         </VStack>
       </Flex>
     </Flex>
