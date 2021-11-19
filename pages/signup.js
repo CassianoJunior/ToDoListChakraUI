@@ -115,6 +115,7 @@ const SingIn = () => {
             variant="flushed"
             type="text"
             placeholder="Username"
+            color="white"
             onChange={(e) => {
               e.preventDefault();
               setUser(e.target.value);
@@ -126,6 +127,7 @@ const SingIn = () => {
               variant="flushed"
               type={showPass ? 'text' : 'password'}
               placeholder="Password"
+              color="white"
               onChange={(e) => {
                 e.preventDefault();
                 setPassword(e.target.value);
@@ -145,6 +147,7 @@ const SingIn = () => {
               variant="flushed"
               type={showConfirmPass ? 'text' : 'password'}
               placeholder="Confirm password"
+              color="white"
               onChange={(e) => {
                 e.preventDefault();
                 setConfirmPassword(e.target.value);
