@@ -18,8 +18,6 @@ export default async function handleUser(req, res) {
     // const { defaultUser, user, description } = JSON.parse(req.body);
     const { defaultUser, user, description } = req.body;
 
-    console.log(defaultUser, user);
-
     const datoRequest = await fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
