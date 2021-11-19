@@ -17,6 +17,8 @@ import {
   DrawerOverlay,
   DrawerContent,
   useDisclosure,
+  Spinner,
+  useToast,
 } from '@chakra-ui/react';
 import { FaMoon, FaSun, FaSignOutAlt } from 'react-icons/fa';
 import {
@@ -29,13 +31,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import nookies from 'nookies';
 
-const Header = ({ user }) => {
+const Header = ({ user, setUser }) => {
+  const defaultUser = user.username;
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [username, setUsername] = useState(user.username);
   const [description, setDescription] = useState(user.description);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   const showUserInfo = () => (
     <>
@@ -70,11 +75,59 @@ const Header = ({ user }) => {
         variant="outline"
         colorScheme="green"
         w="100%"
-        onClick={(e) => {
+        onClick={async (e) => {
           e.preventDefault();
+          setIsLoading(true);
+
+          const request = await fetch('http://localhost:3000/api/handleUser', {
+            method: 'POST',
+            headers: {
+              'Content-type': 'application/json',
+            },
+            body: JSON.stringify({
+              defaultUser,
+              user: username,
+              description,
+            }),
+          });
+
+          const response = await request.json();
+
+          const { message, userUpdated, token } = response;
+
+          if (message !== 'Successfully updated') {
+            toast({
+              title: message,
+              status: 'error',
+              variant: 'top-accent',
+              isClosable: true,
+              duration: 1000,
+              position: 'top',
+            });
+            setUsername(user.username);
+            setDescription(user.description);
+          } else {
+            toast({
+              title: message,
+              status: 'success',
+              variant: 'top-accent',
+              isClosable: true,
+              duration: 1000,
+              position: 'top',
+            });
+            nookies.destroy(null, 'ToDoListUSER_TOKEN');
+            nookies.set(null, 'ToDoListUSER_TOKEN', token, {
+              path: '/',
+              maxAge: 60 * 60 * 1, // 1 Hour
+            });
+            setUser(userUpdated);
+          }
+
+          setIsLoading(false);
+          setIsEditing(false);
         }}
       >
-        Done
+        Done {isLoading && <Spinner size="sm" ml={2} />}
       </Button>
     </Stack>
   );

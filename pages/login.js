@@ -136,7 +136,10 @@ const SingIn = () => {
               e.preventDefault();
               setLoading(true);
 
-              if (!checkFields(user, password, toast)) return;
+              if (!checkFields(user, password, toast)) {
+                setLoading(false);
+                return;
+              }
 
               const response = await fetch('http://localhost:3000/api/auth', {
                 method: 'POST',

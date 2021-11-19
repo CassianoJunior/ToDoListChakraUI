@@ -8,6 +8,7 @@ import Footer from '../src/components/Footer';
 
 export default function Home({ user }) {
   const [tasks, setTasks] = useState([]);
+  const [loadedUser, setUser] = useState(user);
 
   useEffect(() => {
     const loadTasks =
@@ -20,9 +21,10 @@ export default function Home({ user }) {
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
+
   return (
     <>
-      <Header user={user} />
+      <Header user={loadedUser} setUser={setUser} />
       <Grid
         templateColumns={['1fr', '1fr', 'repeat(3, minmax(0,1fr))']}
         gap={4}
@@ -34,19 +36,19 @@ export default function Home({ user }) {
           title="To do"
           tasks={tasks}
           setTasks={setTasks}
-          user={user}
+          user={loadedUser}
         />
         <ListSection
           title="Doing"
           tasks={tasks}
           setTasks={setTasks}
-          user={user}
+          user={loadedUser}
         />
         <ListSection
           title="Done"
           tasks={tasks}
           setTasks={setTasks}
-          user={user}
+          user={loadedUser}
         />
       </Grid>
       <Footer />

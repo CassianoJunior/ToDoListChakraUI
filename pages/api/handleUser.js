@@ -1,5 +1,6 @@
 import { env } from 'process';
 import { SiteClient } from 'datocms-client';
+import jwt from 'jsonwebtoken';
 
 let cachedDato = null;
 
@@ -14,7 +15,10 @@ export default async function handleUser(req, res) {
     const server = connectToDato();
     cachedDato = server;
 
-    const { user, description, avatar } = req.body;
+    // const { defaultUser, user, description } = JSON.parse(req.body);
+    const { defaultUser, user, description } = req.body;
+
+    console.log(defaultUser, user);
 
     const datoRequest = await fetch('https://graphql.datocms.com/', {
       method: 'POST',
@@ -28,8 +32,7 @@ export default async function handleUser(req, res) {
             allUsers {
               id,
               username,
-              description,
-              password
+              description
             }
           }`,
       }),
@@ -39,20 +42,48 @@ export default async function handleUser(req, res) {
 
     const datoUsers = datoResponse.data.allUsers;
 
-    const userSelectedArray = datoUsers.filter(
+    // Verificar se ja existe um usuario com o novo nome
+    const [existingUser] = datoUsers.filter(
       (userObject) => user === userObject.username,
     );
 
-    const userSelected = userSelectedArray[0];
+    if (existingUser && user !== defaultUser) {
+      res.status(400).json({ message: 'User already exists' });
+      return;
+    }
+
+    const [userSelected] = datoUsers.filter(
+      (userObject) => defaultUser === userObject.username,
+    );
 
     const updatedUser = await server.items.update(userSelected.id, {
       username: user,
       description,
     });
 
-    res
-      .status(200)
-      .json({ message: 'Successfully updated', user: updatedUser });
+    const token = jwt.sign(
+      {
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          description: updatedUser.description,
+        },
+      },
+      env.SECRET,
+      {
+        expiresIn: 60 * 60 * 1, // 1 hour
+      },
+    );
+
+    res.status(200).json({
+      message: 'Successfully updated',
+      userUpdated: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        description: updatedUser.description,
+      },
+      token,
+    });
   } else {
     res.status(405).json({ message: 'Get method not allowed' });
   }

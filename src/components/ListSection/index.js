@@ -282,6 +282,8 @@ const ListSection = ({ title, tasks, setTasks, user }) => {
                 if (isEditing) {
                   cardToUpdate.title = titleNewTask;
                   cardToUpdate.tags = parseTags(tagsActive);
+                  cardToUpdate.user = user.username;
+                  cardToUpdate.description = user.description;
                   setTasks([...tasks]);
                 } else {
                   const cardAdded = {

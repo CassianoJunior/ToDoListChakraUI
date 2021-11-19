@@ -115,7 +115,7 @@ const Card = ({
         ;
       </HStack>
       <Flex py={2} ml={3}>
-        <Avatar size="sm" icon={<AiOutlineUser />} />
+        <Avatar size="sm" name={user} icon={<AiOutlineUser />} />
         <Box ml="3">
           <Text fontWeight="bold" fontSize="sm">
             {user}
