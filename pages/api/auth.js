@@ -5,8 +5,8 @@ import { env } from 'process';
 
 export default async function auth(req, res) {
   if (req.method === 'POST') {
-    // const { user, password } = req.body;
-    const { user, password } = JSON.parse(req.body);
+    const { user, password } = req.body;
+    // const { user, password } = JSON.parse(req.body);
 
     const datoRequest = await fetch('https://graphql.datocms.com/', {
       method: 'POST',
