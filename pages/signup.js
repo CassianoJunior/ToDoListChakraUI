@@ -100,7 +100,7 @@ const SingIn = () => {
       />
       <Flex
         flexDir="column"
-        w="40%"
+        w={['90%', '40%']}
         p={10}
         rounded="xl"
         bg={useColorModeValue('gray.800')}

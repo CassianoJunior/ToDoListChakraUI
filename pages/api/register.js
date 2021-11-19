@@ -20,14 +20,24 @@ const handleRegister = async (req, res) => {
     cachedDato = server;
 
     try {
-      await server.items.create({
+      const userCreated = await server.items.create({
         itemType: '1415781',
         username: user,
         password,
       });
-      const token = jwt.sign({ username: user }, env.SECRET, {
-        expiresIn: 60 * 60 * 1, // 1 hour
-      });
+      const token = jwt.sign(
+        {
+          user: {
+            id: userCreated.id,
+            username: userCreated.username,
+            description: userCreated.description,
+          },
+        },
+        env.SECRET,
+        {
+          expiresIn: 60 * 60 * 1, // 1 hour
+        },
+      );
 
       res.status(201).json({ username: user, token });
     } catch (err) {

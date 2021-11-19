@@ -87,7 +87,7 @@ const SingIn = () => {
       />
       <Flex
         flexDir="column"
-        w="40%"
+        w={['90%', '40%']}
         p={10}
         rounded="xl"
         bg={useColorModeValue('gray.800')}
@@ -113,6 +113,7 @@ const SingIn = () => {
               variant="flushed"
               type={showPass ? 'text' : 'password'}
               placeholder="Password"
+              value={password}
               onChange={(e) => {
                 e.preventDefault();
                 setPassword(e.target.value);
@@ -155,6 +156,8 @@ const SingIn = () => {
                   duration: 1000,
                   isClosable: true,
                 });
+                setLoading(false);
+                setPassword('');
               } else {
                 toast({
                   title: message,

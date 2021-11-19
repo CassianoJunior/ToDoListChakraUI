@@ -47,7 +47,7 @@ function stringifyTags(cardTags) {
   return namedTags;
 }
 
-const ListSection = ({ title, tasks, setTasks }) => {
+const ListSection = ({ title, tasks, setTasks, user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -147,7 +147,7 @@ const ListSection = ({ title, tasks, setTasks }) => {
                 title: cardTitle,
                 tags: cardTags,
                 status,
-                user,
+                user: cardUser,
                 description,
               }) => (
                 <Card
@@ -156,7 +156,7 @@ const ListSection = ({ title, tasks, setTasks }) => {
                   title={cardTitle}
                   tags={cardTags}
                   status={status}
-                  user={user}
+                  user={cardUser}
                   description={description}
                   remove={removeTask}
                   editing={[onOpen, setCardToUpdate, getTask, setEditing]}
@@ -289,8 +289,8 @@ const ListSection = ({ title, tasks, setTasks }) => {
                     title: titleNewTask,
                     tags: parseTags(tagsActive),
                     status: title,
-                    user: 'Default',
-                    description: 'Desc',
+                    user: user.username,
+                    description: user.description,
                   };
                   const newTasks = [...tasks, cardAdded];
                   setTasks(newTasks);
