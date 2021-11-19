@@ -1,25 +1,83 @@
 import {
   Flex,
+  Box,
   IconButton,
+  Button,
   Heading,
   Spacer,
   useColorMode,
   Text,
+  Stack,
+  Avatar,
+  Input,
   Drawer,
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { AiOutlineMenu, AiOutlineDoubleLeft } from 'react-icons/ai';
+import { FaMoon, FaSun, FaSignOutAlt } from 'react-icons/fa';
+import {
+  AiOutlineMenu,
+  AiOutlineDoubleLeft,
+  AiOutlineEdit,
+} from 'react-icons/ai';
+
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import nookies from 'nookies';
 
 const Header = ({ user }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [username, setUsername] = useState(user.username);
+  const [description, setDescription] = useState(user.description);
+  const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
+
+  const showUserInfo = () => (
+    <>
+      <Heading fontSize="2xl" fontWeight={500} fontFamily="body">
+        {user.username}
+      </Heading>
+      <Text color="gray.500">{user.description && user.description}</Text>
+    </>
+  );
+
+  const editUserInfo = () => (
+    <Stack width="100%">
+      <Input
+        placeholder="Username"
+        value={username}
+        variant="flushed"
+        mb={2}
+        onChange={(e) => {
+          setUsername(e.target.value);
+        }}
+      />
+      <Input
+        placeholder="Description"
+        value={description}
+        variant="flushed"
+        onChange={(e) => {
+          e.preventDefault();
+          setDescription(e.target.value);
+        }}
+      />
+      <Button
+        variant="outline"
+        colorScheme="green"
+        w="100%"
+        onClick={(e) => {
+          e.preventDefault();
+        }}
+      >
+        Done
+      </Button>
+    </Stack>
+  );
 
   return (
     <>
@@ -58,7 +116,51 @@ const Header = ({ user }) => {
               size="sm"
             />
           </DrawerHeader>
-          <DrawerBody>{user.username}</DrawerBody>
+          <DrawerBody>
+            <Flex justify="center" mt={2}>
+              <Avatar
+                size="xl"
+                name={user.username}
+                alt="User"
+                css={{
+                  border: '2px solid gray',
+                }}
+              />
+            </Flex>
+
+            <Box p={6}>
+              <Stack spacing={0} align="center" mb={5}>
+                {!isEditing && showUserInfo()}
+                {isEditing && editUserInfo()}
+              </Stack>
+            </Box>
+          </DrawerBody>
+          <DrawerFooter>
+            <Button
+              colorScheme="red"
+              align="center"
+              rightIcon={<FaSignOutAlt />}
+              onClick={(e) => {
+                e.preventDefault();
+
+                nookies.destroy(null, 'ToDoListUSER_TOKEN');
+                router.push('/login');
+              }}
+            >
+              Sign out
+            </Button>
+            <Spacer />
+            <Button
+              colorScheme="blue"
+              rightIcon={<AiOutlineEdit />}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsEditing(true);
+              }}
+            >
+              Edit
+            </Button>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>
