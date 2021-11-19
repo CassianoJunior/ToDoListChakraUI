@@ -143,13 +143,16 @@ const SingIn = () => {
                 return;
               }
 
-              const response = await fetch('http://localhost:3000/api/auth', {
-                method: 'POST',
-                headers: {
-                  'Content-type': 'aplication/json',
+              const response = await fetch(
+                'https://to-do-list-chakra-ui.vercel.app/api/auth',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-type': 'aplication/json',
+                  },
+                  body: JSON.stringify({ user, password }),
                 },
-                body: JSON.stringify({ user, password }),
-              });
+              );
 
               const { message, token } = await response.json();
 

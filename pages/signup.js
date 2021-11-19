@@ -174,7 +174,7 @@ const SingIn = () => {
 
               hash(password, 10, async (err, hashKey) => {
                 const newUser = await fetch(
-                  'http://localhost:3000/api/register',
+                  'https://to-do-list-chakra-ui.vercel.app/api/register',
                   {
                     method: 'POST',
                     headers: {
