@@ -30,6 +30,7 @@ import {
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import nookies from 'nookies';
+import url from '../../lib/objects/url.json';
 
 const Header = ({ user, setUser }) => {
   const defaultUser = user.username;
@@ -79,7 +80,7 @@ const Header = ({ user, setUser }) => {
           e.preventDefault();
           setIsLoading(true);
 
-          const request = await fetch('http://localhost:3000/api/handleUser', {
+          const request = await fetch(`${url.production}/api/handleUser`, {
             method: 'POST',
             headers: {
               'Content-type': 'application/json',

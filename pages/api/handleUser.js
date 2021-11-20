@@ -15,7 +15,6 @@ export default async function handleUser(req, res) {
     const server = connectToDato();
     cachedDato = server;
 
-    // const { defaultUser, user, description } = JSON.parse(req.body);
     const { defaultUser, user, description } = req.body;
 
     const datoRequest = await fetch('https://graphql.datocms.com/', {
