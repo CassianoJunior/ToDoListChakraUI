@@ -22,6 +22,8 @@ import {
 } from '@chakra-ui/react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
+import MyHead from '../src/components/Head';
+import url from '../src/lib/objects/url.json';
 
 function checkFields(user, password, confirmPassword, toast) {
   if (!user) {
@@ -84,146 +86,150 @@ const SingIn = () => {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Flex
-      align="center"
-      justify="center"
-      h="100vh"
-      bg={useColorModeValue('gray.50')}
-    >
-      <IconButton
-        icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
-        isRound="true"
-        onClick={toggleColorMode}
-        pos="absolute"
-        right="20px"
-        top="20px"
-      />
+    <>
+      <MyHead />
       <Flex
-        flexDir="column"
-        w={['90%', '40%']}
-        p={10}
-        rounded="xl"
-        bg={useColorModeValue('gray.800')}
+        align="center"
+        justify="center"
+        h="100vh"
+        bg={useColorModeValue('gray.50')}
       >
-        <Stack align="center">
-          <Heading fontSize="3xl" color="white">
-            Sign up
-          </Heading>
-        </Stack>
-        <VStack mx="auto" my={5} spacing={4} w="100%">
-          <Input
-            variant="flushed"
-            type="text"
-            placeholder="Username"
-            color="white"
-            onChange={(e) => {
-              e.preventDefault();
-              setUser(e.target.value);
-            }}
-            px={1}
-          />
-          <InputGroup>
+        <IconButton
+          icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+          isRound="true"
+          onClick={toggleColorMode}
+          pos="absolute"
+          right="20px"
+          top="20px"
+        />
+        <Flex
+          flexDir="column"
+          w={['90%', '40%']}
+          p={10}
+          rounded="xl"
+          bg={useColorModeValue('gray.800')}
+        >
+          <Stack align="center">
+            <Heading fontSize="3xl" color="white">
+              Sign up
+            </Heading>
+          </Stack>
+          <VStack mx="auto" my={5} spacing={4} w="100%">
             <Input
               variant="flushed"
-              type={showPass ? 'text' : 'password'}
-              placeholder="Password"
+              type="text"
+              placeholder="Username"
               color="white"
               onChange={(e) => {
                 e.preventDefault();
-                setPassword(e.target.value);
+                setUser(e.target.value);
               }}
               px={1}
             />
-            <InputRightElement>
-              <IconButton
-                size="xs"
-                icon={showPass ? <RiEyeCloseLine /> : <RiEyeLine />}
-                onClick={() => setShowPass(!showPass)}
+            <InputGroup>
+              <Input
+                variant="flushed"
+                type={showPass ? 'text' : 'password'}
+                placeholder="Password"
+                color="white"
+                onChange={(e) => {
+                  e.preventDefault();
+                  setPassword(e.target.value);
+                }}
+                px={1}
               />
-            </InputRightElement>
-          </InputGroup>
-          <InputGroup>
-            <Input
-              variant="flushed"
-              type={showConfirmPass ? 'text' : 'password'}
-              placeholder="Confirm password"
-              color="white"
-              onChange={(e) => {
+              <InputRightElement>
+                <IconButton
+                  size="xs"
+                  icon={showPass ? <RiEyeCloseLine /> : <RiEyeLine />}
+                  onClick={() => setShowPass(!showPass)}
+                />
+              </InputRightElement>
+            </InputGroup>
+            <InputGroup>
+              <Input
+                variant="flushed"
+                type={showConfirmPass ? 'text' : 'password'}
+                placeholder="Confirm password"
+                color="white"
+                onChange={(e) => {
+                  e.preventDefault();
+                  setConfirmPassword(e.target.value);
+                }}
+                px={1}
+              />
+              <InputRightElement>
+                <IconButton
+                  size="xs"
+                  icon={showConfirmPass ? <RiEyeCloseLine /> : <RiEyeLine />}
+                  onClick={() => setShowConfirmPass(!showConfirmPass)}
+                />
+              </InputRightElement>
+            </InputGroup>
+            <Button
+              w="100%"
+              colorScheme={useColorModeValue('blue', 'teal')}
+              variant="outline"
+              onClick={(e) => {
                 e.preventDefault();
-                setConfirmPassword(e.target.value);
-              }}
-              px={1}
-            />
-            <InputRightElement>
-              <IconButton
-                size="xs"
-                icon={showConfirmPass ? <RiEyeCloseLine /> : <RiEyeLine />}
-                onClick={() => setShowConfirmPass(!showConfirmPass)}
-              />
-            </InputRightElement>
-          </InputGroup>
-          <Button
-            w="100%"
-            colorScheme={useColorModeValue('blue', 'teal')}
-            variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
-              setLoading(true);
+                setLoading(true);
 
-              if (!checkFields(user, password, confirmPassword, toast)) return;
+                if (!checkFields(user, password, confirmPassword, toast))
+                  return;
 
-              hash(password, 10, async (err, hashKey) => {
-                const newUser = await fetch(
-                  'https://to-do-list-chakra-ui.vercel.app/api/register',
-                  {
-                    method: 'POST',
-                    headers: {
-                      'Content-type': 'application/json',
+                hash(password, 10, async (err, hashKey) => {
+                  const newUser = await fetch(
+                    `${url.production}/api/register`,
+                    {
+                      method: 'POST',
+                      headers: {
+                        'Content-type': 'application/json',
+                      },
+                      body: JSON.stringify({ user, password: hashKey }),
                     },
-                    body: JSON.stringify({ user, password: hashKey }),
-                  },
-                );
+                  );
 
-                const { message, token } = await newUser.json();
+                  const { message, token } = await newUser.json();
 
-                if (message) {
-                  toast({
-                    title: message,
-                    status: 'error',
-                    variant: 'top-accent',
-                    duration: 1000,
-                    isClosable: true,
-                  });
-                  setLoading(false);
-                } else {
-                  nookies.set(null, 'ToDoListUSER_TOKEN', token, {
-                    path: '/',
-                    maxAge: 60 * 60 * 1, // 1 Hour
-                  });
-                  router.push('/');
-                  toast({
-                    title: 'User created successfully',
-                    status: 'success',
-                    variant: 'top-accent',
-                    isClosable: true,
-                    duration: 1000,
-                  });
-                  setPassword('');
-                  setConfirmPassword('');
-                  setUser('');
-                  setLoading(false);
-                }
-              });
-            }}
-          >
-            Sign up {loading ? <Spinner size="sm" mx={3} /> : ''}
-          </Button>
-          <Text size="sm" color="white">
-            Already have an account? <Link href="/login">Sing in!</Link>
-          </Text>
-        </VStack>
+                  if (message) {
+                    toast({
+                      title: message,
+                      status: 'error',
+                      variant: 'top-accent',
+                      duration: 1000,
+                      isClosable: true,
+                    });
+                    setLoading(false);
+                  } else {
+                    nookies.set(null, 'ToDoListUSER_TOKEN', token, {
+                      path: '/',
+                      maxAge: 60 * 60 * 1, // 1 Hour
+                    });
+                    router.push('/');
+                    toast({
+                      title: 'User created successfully',
+                      status: 'success',
+                      variant: 'top-accent',
+                      isClosable: true,
+                      duration: 1000,
+                    });
+                    setPassword('');
+                    setConfirmPassword('');
+                    setUser('');
+                    setLoading(false);
+                  }
+                });
+              }}
+            >
+              Sign up {loading ? <Spinner size="sm" mx={3} /> : ''}
+            </Button>
+            <Text size="sm" color="white">
+              Already have an account? <Link href="/login">Sign in!</Link>
+            </Text>
+          </VStack>
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };
 

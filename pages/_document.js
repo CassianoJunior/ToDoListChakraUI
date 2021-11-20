@@ -15,6 +15,7 @@ class MyDocument extends Document {
             rel="stylesheet"
             crossOrigin="true"
           />
+          <link rel="shortcut icon" href="/todolist.ico" />
         </Head>
 
         <Main />

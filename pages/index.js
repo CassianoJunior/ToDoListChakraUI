@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import Header from '../src/components/Header';
 import ListSection from '../src/components/ListSection';
 import Footer from '../src/components/Footer';
+import MyHead from '../src/components/Head';
 
 export default function Home({ user }) {
   const [tasks, setTasks] = useState([]);
@@ -24,6 +25,7 @@ export default function Home({ user }) {
 
   return (
     <>
+      <MyHead />
       <Header user={loadedUser} setUser={setUser} />
       <Grid
         templateColumns={['1fr', '1fr', 'repeat(3, minmax(0,1fr))']}

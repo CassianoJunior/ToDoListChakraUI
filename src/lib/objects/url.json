@@ -1,0 +1,4 @@
+{
+    "dev": "http://localhost:3000",
+    "production": "https://to-do-list-chakra-ui.vercel.app"
+}
