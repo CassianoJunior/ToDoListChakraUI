@@ -132,6 +132,7 @@ const SingIn = () => {
                 type={showPass ? 'text' : 'password'}
                 placeholder="Password"
                 color="white"
+                value={password}
                 onChange={(e) => {
                   e.preventDefault();
                   setPassword(e.target.value);
@@ -151,6 +152,7 @@ const SingIn = () => {
                 variant="flushed"
                 type={showConfirmPass ? 'text' : 'password'}
                 placeholder="Confirm password"
+                value={confirmPassword}
                 color="white"
                 onChange={(e) => {
                   e.preventDefault();
@@ -174,8 +176,12 @@ const SingIn = () => {
                 e.preventDefault();
                 setLoading(true);
 
-                if (!checkFields(user, password, confirmPassword, toast))
+                if (!checkFields(user, password, confirmPassword, toast)) {
+                  setLoading(false);
+                  setPassword('');
+                  setConfirmPassword('');
                   return;
+                }
 
                 hash(password, 10, async (err, hashKey) => {
                   const newUser = await fetch(

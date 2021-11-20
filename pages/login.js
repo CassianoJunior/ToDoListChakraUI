@@ -144,6 +144,7 @@ const SignIn = () => {
 
                 if (!checkFields(user, password, toast)) {
                   setLoading(false);
+                  setPassword('');
                   return;
                 }
 

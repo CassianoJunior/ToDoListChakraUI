@@ -2,37 +2,27 @@ import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import { env } from 'process';
+import { SiteClient } from 'datocms-client';
+
+let cachedDato = null;
+
+function connectToDato() {
+  if (cachedDato) return cachedDato;
+
+  return new SiteClient(env.DATO_KEY);
+}
 
 export default async function auth(req, res) {
   if (req.method === 'POST') {
     const { user, password } = req.body;
 
-    const datoRequest = await fetch('https://graphql.datocms.com/', {
-      method: 'POST',
-      headers: {
-        Authorization: env.DATO_KEY,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: `query {
-          allUsers {
-            id,
-            username,
-            password,
-            description
-          }
-        }`,
-      }),
-    });
+    const server = connectToDato();
 
-    const datoResponse = await datoRequest.json();
+    cachedDato = server;
 
-    const users = datoResponse.data.allUsers;
+    const users = await server.items.all();
 
-    const datoUserArray = users.filter((item) => user === item.username);
-
-    const datoUser = datoUserArray[0];
+    const [datoUser] = users.filter((item) => user === item.username);
 
     if (!datoUser) {
       res.status(400).json({ message: 'User not found' });
