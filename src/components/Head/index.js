@@ -2,7 +2,7 @@ import Head from 'next/head';
 
 const MyHead = () => (
   <Head>
-    <title>To do List</title>
+    <title>To-Do List</title>
     <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
